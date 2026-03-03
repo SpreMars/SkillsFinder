@@ -10,6 +10,7 @@ services:
       POSTGRES_DB: postgres
     volumes:
       - postgres-data:/var/lib/postgresql/data
+      - ./docker/init-data.sql:/docker-entrypoint-initdb.d/init-data.sql:ro
     networks:
       - app-network
 
@@ -28,15 +29,14 @@ services:
       dockerfile: Dockerfile
     container_name: skillsfinder-backend
     depends_on:
-      - postgres
-      - redis
+      postgres:
+        condition: service_healthy
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/postgres
-      - SPRING_DATASOURCE_USERNAME=agent1223
-      - SPRING_DATASOURCE_PASSWORD=agent1223
-      - SPRING_DATA_REDIS_HOST=redis
-      - SPRING_DATA_REDIS_PORT=6379
-      - SPRING_DATA_REDIS_PASSWORD=
+      - DB_HOST=postgres
+      - DB_USER=agent1223
+      - DB_PWD=agent1223
+      - REDIS_HOST=redis
+      - REDIS_PWD=
     networks:
       - app-network
     ports:
