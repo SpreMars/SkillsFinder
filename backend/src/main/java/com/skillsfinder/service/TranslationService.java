@@ -92,6 +92,15 @@ public class TranslationService {
                 
                 double match = responseData.path("match").asDouble(0);
                 
+                // Check if translation failed or returned error message
+                if (translatedText == null || translatedText.isEmpty() ||
+                    translatedText.toUpperCase().contains("QUERY LENGTH LIMIT") ||
+                    translatedText.toUpperCase().contains("ERROR") ||
+                    translatedText.equals(text)) {
+                    log.warn("Translation returned error or same text: '{}'", translatedText);
+                    return text;
+                }
+                
                 // Adjusted threshold from 0.3 to 0.2
                 if (match < QUALITY_THRESHOLD) {
                     log.warn("Low quality translation (match={}): '{}' -> '{}'", match, text, translatedText);
