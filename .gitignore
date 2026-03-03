@@ -1,0 +1,40 @@
+# Build
+backend/target/
+frontend/dist/
+frontend/node_modules/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Logs
+*.log
+backend.log
+
+# Maven wrapper
+backend/mvnw*
+backend/.mvn/
+maven-temp/
+
+# Temp files
+maven.zip
+maven-wrapper.zip
+read_jar.ps1
+nul
+
+# Environment
+.env
+
+# Kiro AI assistant
+.kiro/
+
+# Skills (unrelated)
+skills/
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# JQwik database
+.jqwik-database

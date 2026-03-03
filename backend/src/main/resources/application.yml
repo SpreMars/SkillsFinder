@@ -1,0 +1,39 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: skills-finder
+
+  datasource:
+    url: jdbc:postgresql://postgres:5432/postgres
+    username: agent1223
+    password: agent1223
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+
+  data:
+    redis:
+      host: redis
+      port: 6379
+      password: ""
+      timeout: 5000ms
+
+github:
+  api:
+    token: "${GITHUB_TOKEN:-}"
+    base-url: https://api.github.com
+    search-url: https://api.github.com/search/repositories
+
+logging:
+  level:
+    com.skillsfinder: INFO
+    org.springframework.web: INFO
