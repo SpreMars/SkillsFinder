@@ -8,6 +8,12 @@ DOMAIN="${DOMAIN:-marslander.cloud}"
 
 cd "$PROJECT_ROOT"
 
+# 设置 Java 环境
+if [ -d /opt/jdk-17.0.2 ]; then
+  export JAVA_HOME=/opt/jdk-17.0.2
+  export PATH=$JAVA_HOME/bin:$PATH
+fi
+
 # 1) 拉取最新代码
 if [ -d ".git" ]; then
   echo "[1/4] 更新代码..."
@@ -15,31 +21,21 @@ if [ -d ".git" ]; then
   git reset --hard "origin/main" 2>/dev/null || echo "跳过代码更新"
 fi
 
-# 2) 安装 Java 17 (使用国内镜像)
-if ! command -v java &> /dev/null || ! java -version 2>&1 | grep -q "17"; then
-  echo "[2/4] 安装 Java 17..."
+# 2) 安装 Maven
+if ! command -v mvn &> /dev/null; then
+  echo "[2/4] 安装 Maven..."
   cd /tmp
-  wget -q https://mirrors.tuna.tsinghua.edu.cn/github-release/adoptium/temurin17-bionic/JDK17.0.10%2B9/jdk-17.0.10+9_linux-x64_bin.tar.gz || \
-  wget -q https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.10%2B9/jdk-17.0.10+9_linux-x64_bin.tar.gz
-  tar -xzf jdk-17.0.10+9_linux-x64_bin.tar.gz -C /opt/ 2>/dev/null || true
-  if [ -d /opt/jdk-17.0.10+9 ]; then
-    export JAVA_HOME=/opt/jdk-17.0.10+9
-    export PATH=$JAVA_HOME/bin:$PATH
-    ln -sf $JAVA_HOME/bin/java /usr/bin/java
-  fi
+  wget -q https://dlcdn.apache.org/maven/maven-3/3.9.6/binaries/apache-maven-3.9.6-bin.tar.gz
+  tar -xzf apache-maven-3.9.6-bin.tar.gz -C /opt/
+  export PATH=/opt/apache-maven-3.9.6/bin:$PATH
 fi
 
-# 设置 Java 环境
-if [ -d /opt/jdk-17.0.10+9 ]; then
-  export JAVA_HOME=/opt/jdk-17.0.10+9
-  export PATH=$JAVA_HOME/bin:$PATH
-fi
+export PATH=/opt/apache-maven-3.9.6/bin:$PATH
 
-# 3) 安装 Nginx
-if ! command -v nginx &> /dev/null; then
-  echo "[3/4] 安装 Nginx..."
-  yum install -y nginx
-fi
+# 3) 构建后端
+echo "[3/4] 构建后端..."
+cd "$PROJECT_ROOT/backend"
+mvn clean package -DskipTests
 
 # 4) 启动服务
 echo "[4/4] 启动服务..."
@@ -48,18 +44,12 @@ echo "[4/4] 启动服务..."
 pkill -f "java.*backend" 2>/dev/null || true
 pkill nginx 2>/dev/null || true
 
-# 检查 JAR 是否存在
-if [ ! -f "$PROJECT_ROOT/backend/target/backend-1.0.0.jar" ]; then
-  echo "错误: 后端 JAR 文件不存在，请先构建或手动上传"
-  exit 1
-fi
-
 # 启动后端
 cd "$PROJECT_ROOT/backend/target"
 nohup java -jar backend-1.0.0.jar > backend.log 2>&1 &
 sleep 10
 
-# 配置并启动 Nginx
+# 配置 Nginx
 cd "$PROJECT_ROOT/frontend"
 rm -rf /usr/share/nginx/html
 cp -r dist /usr/share/nginx/html
@@ -70,5 +60,4 @@ echo "============================================================"
 echo "部署完成！"
 echo "前端: http://${DOMAIN}"
 echo "后端: http://${DOMAIN}:8080"
-echo "日志: tail -f $PROJECT_ROOT/backend/target/backend.log"
 echo "============================================================"
