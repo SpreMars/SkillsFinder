@@ -1,0 +1,12 @@
+com\skillsfinder\entity\Skill.class
+com\skillsfinder\service\TranslationService$1.class
+com\skillsfinder\service\TranslationService.class
+com\skillsfinder\repository\SkillRepository.class
+com\skillsfinder\SkillsFinderApplication.class
+com\skillsfinder\service\GitHubCrawlerService.class
+com\skillsfinder\config\AppConfig.class
+com\skillsfinder\controller\SkillController.class
+com\skillsfinder\service\SkillService.class
+com\skillsfinder\controller\AdminController.class
+com\skillsfinder\controller\TrendingController.class
+com\skillsfinder\config\AppConfig$1.class

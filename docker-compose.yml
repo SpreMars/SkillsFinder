@@ -24,10 +24,12 @@ services:
       - app-network
 
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
+    image: eclipse-temurin:17-jre-alpine
     container_name: skillsfinder-backend
+    volumes:
+      - ./backend/target/backend-1.0.0.jar:/app/app.jar
+    working_dir: /app
+    command: ["java", "-jar", "app.jar"]
     depends_on:
       postgres:
         condition: service_healthy
@@ -43,16 +45,17 @@ services:
       - "8080:8080"
 
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
+    image: nginx:alpine
     container_name: skillsfinder-frontend
-    depends_on:
-      - backend
+    volumes:
+      - ./frontend/dist:/usr/share/nginx/html:ro
+      - ./frontend/nginx.conf:/etc/nginx/nginx.conf:ro
     networks:
       - app-network
     ports:
       - "80:80"
+    depends_on:
+      - backend
 
 volumes:
   postgres-data:

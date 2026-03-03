@@ -22,8 +22,8 @@ fi
 echo "[2/3] 停止旧容器..."
 docker-compose down -v 2>/dev/null || true
 
-echo "[3/3] 构建并启动服务..."
-docker-compose up -d --build
+echo "[3/3] 启动服务..."
+docker-compose up -d
 
 # 等待启动
 sleep 30

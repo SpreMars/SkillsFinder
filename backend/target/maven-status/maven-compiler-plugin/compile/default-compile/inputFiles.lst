@@ -1,0 +1,11 @@
+D:\opencodeProject\skillsFinder\backend\src\main\java\com\skillsfinder\service\SkillService.java
+D:\opencodeProject\skillsFinder\backend\src\main\java\com\skillsfinder\config\AppConfig.java
+D:\opencodeProject\skillsFinder\backend\src\main\java\com\skillsfinder\controller\AdminController.java
+D:\opencodeProject\skillsFinder\backend\src\main\java\com\skillsfinder\repository\SkillRepository.java
+D:\opencodeProject\skillsFinder\backend\src\main\java\com\skillsfinder\service\GitHubCrawlerService.java
+D:\opencodeProject\skillsFinder\backend\src\main\java\com\skillsfinder\entity\Skill.java
+D:\opencodeProject\skillsFinder\backend\src\main\java\com\skillsfinder\service\TranslationService.java
+D:\opencodeProject\skillsFinder\backend\src\main\java\com\skillsfinder\controller\SkillController.java
+D:\opencodeProject\skillsFinder\backend\src\main\java\com\skillsfinder\controller\TrendingController.java
+D:\opencodeProject\skillsFinder\backend\src\main\java\com\skillsfinder\DataInitializer.java
+D:\opencodeProject\skillsFinder\backend\src\main\java\com\skillsfinder\SkillsFinderApplication.java
