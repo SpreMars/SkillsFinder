@@ -2,6 +2,12 @@ FROM eclipse-temurin:17-jre-alpine
 
 WORKDIR /app
 
+ENV DB_HOST=106.14.112.139
+ENV DB_USER=agent1223
+ENV DB_PWD=agent1223
+ENV REDIS_HOST=106.14.112.139
+ENV REDIS_PWD=
+
 COPY backend-1.0.0.jar app.jar
 
 EXPOSE 8080
