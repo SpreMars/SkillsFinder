@@ -15,9 +15,9 @@ if [ -d ".git" ]; then
   git reset --hard "origin/main" 2>/dev/null || echo "网络不通，跳过代码更新"
 fi
 
-# 2) 安装 Java (如果不存在)
-if ! command -v java &> /dev/null; then
-  echo "[2/6] 安装 Java..."
+# 2) 安装 Java 17
+if ! command -v java &> /dev/null || ! java -version 2>&1 | grep -q "17"; then
+  echo "[2/6] 安装 Java 17..."
   if command -v yum &> /dev/null; then
     yum install -y java-17-openjdk java-17-openjdk-devel
   elif command -v apt-get &> /dev/null; then
@@ -25,32 +25,30 @@ if ! command -v java &> /dev/null; then
   fi
 fi
 
-# 3) 安装 Maven (如果不存在)
+# 3) 安装 Maven 3.9
 if ! command -v mvn &> /dev/null; then
   echo "[3/6] 安装 Maven..."
   if command -v yum &> /dev/null; then
-    yum install -y maven
-  elif command -v apt-get &> /dev/null; then
-    apt-get update && apt-get install -y maven
+    cd /tmp
+    wget -q https://dlcdn.apache.org/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.tar.gz
+    tar -xzf apache-maven-3.9.9-bin.tar.gz -C /opt/
+    ln -s /opt/apache-maven-3.9.9/bin/mvn /usr/bin/mvn
   fi
 fi
 
-# 4) 构建后端
-if command -v mvn &> /dev/null; then
-  echo "[4/6] 构建后端..."
-  cd "$PROJECT_ROOT/backend"
-  mvn clean package -DskipTests
-else
-  echo "[4/6] 跳过构建 (Maven 未安装)"
-fi
+# 设置 Maven PATH
+export PATH="/opt/apache-maven-3.9.9/bin:$PATH"
 
-# 5) 安装 Nginx (如果不存在)
+# 4) 构建后端
+echo "[4/6] 构建后端..."
+cd "$PROJECT_ROOT/backend"
+/opt/apache-maven-3.9.9/bin/mvn clean package -DskipTests
+
+# 5) 安装 Nginx
 if ! command -v nginx &> /dev/null; then
   echo "[5/6] 安装 Nginx..."
   if command -v yum &> /dev/null; then
     yum install -y nginx
-  elif command -v apt-get &> /dev/null; then
-    apt-get update && apt-get install -y nginx
   fi
 fi
 
@@ -68,6 +66,7 @@ sleep 10
 
 # 配置并启动 Nginx
 cd "$PROJECT_ROOT/frontend"
+rm -rf /usr/share/nginx/html
 cp -r dist /usr/share/nginx/html
 cp nginx.conf /etc/nginx/nginx.conf
 nginx -t && nginx
