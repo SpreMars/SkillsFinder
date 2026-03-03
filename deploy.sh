@@ -37,6 +37,12 @@ sleep 10
 # 4) 配置 Nginx
 echo "[4/4] 配置 Nginx..."
 pkill nginx 2>/dev/null || true
+
+# 创建 nginx 目录
+mkdir -p /usr/share/nginx
+mkdir -p /etc/nginx
+
+# 复制静态文件
 cd $PROJECT_ROOT/frontend
 rm -rf /usr/share/nginx/html
 cp -r dist /usr/share/nginx/html
