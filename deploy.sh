@@ -8,56 +8,51 @@ DOMAIN="${DOMAIN:-marslander.cloud}"
 
 cd "$PROJECT_ROOT"
 
-# 1) 拉取最新代码 (如果网络通)
+# 1) 拉取最新代码
 if [ -d ".git" ]; then
-  echo "[1/6] 更新代码..."
+  echo "[1/4] 更新代码..."
   git fetch origin
-  git reset --hard "origin/main" 2>/dev/null || echo "网络不通，跳过代码更新"
+  git reset --hard "origin/main" 2>/dev/null || echo "跳过代码更新"
 fi
 
-# 2) 安装 Java 17
+# 2) 安装 Java 17 (使用国内镜像)
 if ! command -v java &> /dev/null || ! java -version 2>&1 | grep -q "17"; then
-  echo "[2/6] 安装 Java 17..."
-  if command -v yum &> /dev/null; then
-    yum install -y java-17-openjdk java-17-openjdk-devel
-  elif command -v apt-get &> /dev/null; then
-    apt-get update && apt-get install -y openjdk-17-jdk
+  echo "[2/4] 安装 Java 17..."
+  cd /tmp
+  wget -q https://mirrors.tuna.tsinghua.edu.cn/github-release/adoptium/temurin17-bionic/JDK17.0.10%2B9/jdk-17.0.10+9_linux-x64_bin.tar.gz || \
+  wget -q https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.10%2B9/jdk-17.0.10+9_linux-x64_bin.tar.gz
+  tar -xzf jdk-17.0.10+9_linux-x64_bin.tar.gz -C /opt/ 2>/dev/null || true
+  if [ -d /opt/jdk-17.0.10+9 ]; then
+    export JAVA_HOME=/opt/jdk-17.0.10+9
+    export PATH=$JAVA_HOME/bin:$PATH
+    ln -sf $JAVA_HOME/bin/java /usr/bin/java
   fi
 fi
 
-# 3) 安装 Maven 3.9
-if ! command -v mvn &> /dev/null; then
-  echo "[3/6] 安装 Maven..."
-  if command -v yum &> /dev/null; then
-    cd /tmp
-    wget -q https://dlcdn.apache.org/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.tar.gz
-    tar -xzf apache-maven-3.9.9-bin.tar.gz -C /opt/
-    ln -s /opt/apache-maven-3.9.9/bin/mvn /usr/bin/mvn
-  fi
+# 设置 Java 环境
+if [ -d /opt/jdk-17.0.10+9 ]; then
+  export JAVA_HOME=/opt/jdk-17.0.10+9
+  export PATH=$JAVA_HOME/bin:$PATH
 fi
 
-# 设置 Maven PATH
-export PATH="/opt/apache-maven-3.9.9/bin:$PATH"
-
-# 4) 构建后端
-echo "[4/6] 构建后端..."
-cd "$PROJECT_ROOT/backend"
-/opt/apache-maven-3.9.9/bin/mvn clean package -DskipTests
-
-# 5) 安装 Nginx
+# 3) 安装 Nginx
 if ! command -v nginx &> /dev/null; then
-  echo "[5/6] 安装 Nginx..."
-  if command -v yum &> /dev/null; then
-    yum install -y nginx
-  fi
+  echo "[3/4] 安装 Nginx..."
+  yum install -y nginx
 fi
 
-# 6) 启动服务
-echo "[6/6] 启动服务..."
+# 4) 启动服务
+echo "[4/4] 启动服务..."
 
 # 停止旧进程
 pkill -f "java.*backend" 2>/dev/null || true
 pkill nginx 2>/dev/null || true
+
+# 检查 JAR 是否存在
+if [ ! -f "$PROJECT_ROOT/backend/target/backend-1.0.0.jar" ]; then
+  echo "错误: 后端 JAR 文件不存在，请先构建或手动上传"
+  exit 1
+fi
 
 # 启动后端
 cd "$PROJECT_ROOT/backend/target"
@@ -75,4 +70,5 @@ echo "============================================================"
 echo "部署完成！"
 echo "前端: http://${DOMAIN}"
 echo "后端: http://${DOMAIN}:8080"
+echo "日志: tail -f $PROJECT_ROOT/backend/target/backend.log"
 echo "============================================================"
