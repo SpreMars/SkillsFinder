@@ -144,7 +144,7 @@ public class GitHubCrawlerService {
             }
         }
         
-        skill.setDescription(originalDescription);
+        skill.setDescription(item.path("description").asText());
         
         skill.setOwner(item.path("owner").path("login").asText());
         skill.setRepository(item.path("name").asText());
