@@ -27,7 +27,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class GitHubCrawlerService {
     
     private final SkillService skillService;
-    private final TranslationService translationService;
     private final ObjectMapper objectMapper;
     private final RestTemplate restTemplate;
     
@@ -145,10 +144,7 @@ public class GitHubCrawlerService {
             }
         }
         
-        // Translate description with topics for intelligent category labels
-        String originalDescription = item.path("description").asText();
-        String translatedDescription = translationService.translateToChinese(originalDescription, topicsList);
-        skill.setDescription(translatedDescription);
+        skill.setDescription(originalDescription);
         
         skill.setOwner(item.path("owner").path("login").asText());
         skill.setRepository(item.path("name").asText());
