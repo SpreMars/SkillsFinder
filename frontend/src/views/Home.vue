@@ -34,6 +34,12 @@
       <span class="trending-arrow">→</span>
     </div>
     
+    <router-link to="/dcm" class="dcm-banner">
+      <span class="dcm-icon">🏥</span>
+      <span class="dcm-text">医学影像查看器 - CT影像无损浏览</span>
+      <span class="dcm-arrow">→</span>
+    </router-link>
+    
     <div v-if="showTrending" class="modal-overlay" @click="showTrending = false">
       <div class="modal-content" @click.stop>
         <div class="modal-header">
@@ -774,5 +780,41 @@ onMounted(() => {
 .page-info {
   color: rgba(255, 255, 255, 0.6);
   font-size: 0.9rem;
+}
+
+.dcm-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin: 1.5rem 2rem;
+  padding: 1.25rem 2rem;
+  background: linear-gradient(135deg, rgba(34, 211, 238, 0.15), rgba(99, 102, 241, 0.15));
+  border: 1px solid rgba(34, 211, 238, 0.3);
+  border-radius: 12px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.dcm-banner:hover {
+  background: linear-gradient(135deg, rgba(34, 211, 238, 0.25), rgba(99, 102, 241, 0.25));
+  border-color: rgba(34, 211, 238, 0.5);
+  transform: translateY(-2px);
+}
+
+.dcm-icon {
+  font-size: 1.5rem;
+}
+
+.dcm-text {
+  flex: 1;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #fff;
+}
+
+.dcm-arrow {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 1.25rem;
 }
 </style>

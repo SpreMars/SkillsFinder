@@ -38,3 +38,6 @@ Thumbs.db
 
 # JQwik database
 .jqwik-database
+
+# DCM medical images (too large for git)
+frontend/public/dcm/
